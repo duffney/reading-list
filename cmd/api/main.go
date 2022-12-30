@@ -15,6 +15,11 @@ type config struct {
 	env  string
 }
 
+type application struct {
+	config config //type embedding
+	logger *log.Logger
+}
+
 func main() {
 	var cfg config
 
@@ -24,22 +29,19 @@ func main() {
 
 	logger := log.New(os.Stdout, "", log.Ldate|log.Ltime)
 
+	app := &application{
+		config: cfg,
+		logger: logger,
+	}
 	addr := fmt.Sprintf(":%d", cfg.port)
 
-	http.HandleFunc("/v1/healthcheck", healthcheckHandler)
+	http.HandleFunc("/v1/healthcheck", app.healthcheckHandler)
+	http.HandleFunc("/v1/books", app.crBooksHandler)
+	http.HandleFunc("/v1/books/", app.rudBooksHandler)
 
 	logger.Printf("starting %s server on %s", cfg.env, addr)
 	err := http.ListenAndServe(addr, nil)
 	if err != nil {
 		logger.Fatal(err)
 	}
-}
-func healthcheckHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
-		return
-	}
-	fmt.Fprintln(w, "status: available")
-	fmt.Fprintln(w, "environment: development")
-	fmt.Fprintf(w, "version: %s\n", version)
 }
