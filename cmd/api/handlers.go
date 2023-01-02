@@ -5,6 +5,9 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"time"
+
+	"github.com/Duffney/reading-list/internal/data"
 )
 
 func (app *application) healthcheckHandler(w http.ResponseWriter, r *http.Request) {
@@ -63,6 +66,29 @@ func (app *application) rudBooksHandler(w http.ResponseWriter, r *http.Request) 
 
 	if r.Method == http.MethodGet {
 		fmt.Fprintf(w, "Get record for bookID %d\n", idInt)
+		book := data.Book{
+			ID:            idInt,
+			CreatedAt:     time.Now(),
+			Title:         "Reclaim",
+			Subtitle:      "Win the War Against Distraction and Rebuild the Linear Mind",
+			PublishedDate: time.Date(2023, time.November, 12, 25, 0, 0, 0, time.UTC),
+			Pages:         125,
+			Genres:        []string{"Nonfiction", "Productivity", "Self Help"},
+			Rating:        4,
+			Version:       1,
+		}
+
+		js, err := json.Marshal(book)
+		if err != nil {
+			app.logger.Print(err)
+			http.Error(w, "The server encournted a problem and could not process your request", http.StatusInternalServerError)
+			return
+		}
+
+		js = append(js, '\n')
+
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(js)
 	}
 
 	if r.Method == http.MethodPut {
