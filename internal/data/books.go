@@ -6,13 +6,13 @@ import (
 
 type Book struct {
 	ID            int64     `json:"id"`
-	CreatedAt     time.Time `json:"created_at"`
+	CreatedAt     time.Time `json:"-"`
 	Title         string    `json:"title"`
 	Subtitle      string    `json:"year"`
-	PublishedDate time.Time `json:"published_date"` //year, month, day := fromDate.Date()
-	Pages         int       `json:"pages"`
-	Genres        []string  `json:"genres"`
-	Rating        int       `json:"rating"`
+	PublishedDate time.Time `json:"published_date,omitempty"` //year, month, day := fromDate.Date()
+	Pages         int       `json:"pages,omitempty"`
+	Genres        []string  `json:"genres,omitempty"`
+	Rating        int       `json:"rating,omitempty"`
 	Version       int32     `json:"version"`
 }
 
