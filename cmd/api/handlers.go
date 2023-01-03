@@ -61,15 +61,15 @@ func (app *application) rudBooksHandler(w http.ResponseWriter, r *http.Request) 
 
 	if r.Method == http.MethodGet {
 		book := data.Book{
-			ID:            idInt,
-			CreatedAt:     time.Now(),
-			Title:         "Reclaim",
-			Subtitle:      "Win the War Against Distraction and Rebuild the Linear Mind",
-			PublishedDate: time.Date(2023, time.November, 12, 25, 0, 0, 0, time.UTC),
-			Pages:         125,
-			Genres:        []string{"Nonfiction", "Productivity", "Self Help"},
-			Rating:        4,
-			Version:       1,
+			ID:        idInt,
+			CreatedAt: time.Now(),
+			Title:     "Reclaim",
+			Subtitle:  "Win the War Against Distraction and Rebuild the Linear Mind",
+			Published: "2023-11-25",
+			Pages:     125,
+			Genres:    []string{"Nonfiction", "Productivity", "Self Help"},
+			Rating:    4,
+			Version:   1,
 		}
 
 		err := app.writeJSON(w, http.StatusOK, envelope{"book": book}, nil)
