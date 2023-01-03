@@ -15,10 +15,12 @@ func (app *application) healthcheckHandler(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	data := map[string](string){
-		"status":      "available",
-		"environment": app.config.env,
-		"version":     version,
+	data := envelope{
+		"status": "available",
+		"system_info": map[string]string{
+			"environment": app.config.env,
+			"version":     version,
+		},
 	}
 
 	err := app.writeJSON(w, http.StatusOK, data, nil)
@@ -70,7 +72,7 @@ func (app *application) rudBooksHandler(w http.ResponseWriter, r *http.Request) 
 			Version:       1,
 		}
 
-		err := app.writeJSON(w, http.StatusOK, book, nil)
+		err := app.writeJSON(w, http.StatusOK, envelope{"book": book}, nil)
 		if err != nil {
 			app.logger.Print(err)
 			http.Error(w, "The server encounterd a problem and could not process your request", http.StatusInternalServerError)
