@@ -17,3 +17,4 @@ type Book struct {
 }
 
 // TODO Create a custom type for PublishedDate like Runtime in Let's Go Further
+// TODO Rename as models, move to api?

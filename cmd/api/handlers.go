@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -22,17 +21,11 @@ func (app *application) healthcheckHandler(w http.ResponseWriter, r *http.Reques
 		"version":     version,
 	}
 
-	js, err := json.Marshal(data)
+	err := app.writeJSON(w, http.StatusOK, data, nil)
 	if err != nil {
 		app.logger.Print(err)
-		http.Error(w, "The server encournted a problem and could not process your request", http.StatusInternalServerError)
-		return
+		http.Error(w, "The server encounterd a problem and could not process your request", http.StatusInternalServerError)
 	}
-
-	js = append(js, '\n')
-
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(js)
 }
 
 func (app *application) crBooksHandler(w http.ResponseWriter, r *http.Request) {
@@ -65,7 +58,6 @@ func (app *application) rudBooksHandler(w http.ResponseWriter, r *http.Request) 
 	}
 
 	if r.Method == http.MethodGet {
-		fmt.Fprintf(w, "Get record for bookID %d\n", idInt)
 		book := data.Book{
 			ID:            idInt,
 			CreatedAt:     time.Now(),
@@ -78,17 +70,11 @@ func (app *application) rudBooksHandler(w http.ResponseWriter, r *http.Request) 
 			Version:       1,
 		}
 
-		js, err := json.Marshal(book)
+		err := app.writeJSON(w, http.StatusOK, book, nil)
 		if err != nil {
 			app.logger.Print(err)
-			http.Error(w, "The server encournted a problem and could not process your request", http.StatusInternalServerError)
-			return
+			http.Error(w, "The server encounterd a problem and could not process your request", http.StatusInternalServerError)
 		}
-
-		js = append(js, '\n')
-
-		w.Header().Set("Content-Type", "application/json")
-		w.Write(js)
 	}
 
 	if r.Method == http.MethodPut {
