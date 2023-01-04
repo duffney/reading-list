@@ -35,6 +35,8 @@ func main() {
 	}
 	addr := fmt.Sprintf(":%d", cfg.port)
 
+	// TODO add different routes for more handlers /v1/books/create app.createBook etc., simplifies
+	http.HandleFunc("/", app.notFoundResponse) // route for custom 404 reponse
 	http.HandleFunc("/v1/healthcheck", app.healthcheckHandler)
 	http.HandleFunc("/v1/books", app.crBooksHandler)
 	http.HandleFunc("/v1/books/", app.rudBooksHandler)

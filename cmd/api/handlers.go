@@ -23,11 +23,14 @@ func (app *application) healthcheckHandler(w http.ResponseWriter, r *http.Reques
 		},
 	}
 
-	err := app.writeJSON(w, http.StatusOK, data, nil)
-	if err != nil {
-		app.logger.Print(err)
-		http.Error(w, "The server encounterd a problem and could not process your request", http.StatusInternalServerError)
+	if err := app.writeJSON(w, http.StatusOK, data, nil); err != nil {
+		app.serverErrorResponse(w, r, err)
 	}
+	//err := app.writeJSON(w, http.StatusOK, data, nil)
+	//if err != nil {
+	//app.logger.Print(err)
+	//http.Error(w, "The server encounterd a problem and could not process your request", http.StatusInternalServerError)
+	//}
 }
 
 func (app *application) crBooksHandler(w http.ResponseWriter, r *http.Request) {
@@ -55,7 +58,8 @@ func (app *application) rudBooksHandler(w http.ResponseWriter, r *http.Request) 
 	id := r.URL.Path[len("v1/books//"):]
 	idInt, err := strconv.ParseInt(id, 10, 64)
 	if err != nil {
-		http.Error(w, http.StatusText(400), http.StatusBadRequest)
+		app.badRequestResponse(w, r, err)
+		// http.Error(w, http.StatusText(400), http.StatusBadRequest)
 		return
 	}
 
@@ -65,18 +69,21 @@ func (app *application) rudBooksHandler(w http.ResponseWriter, r *http.Request) 
 			CreatedAt: time.Now(),
 			Title:     "Reclaim",
 			Subtitle:  "Win the War Against Distraction and Rebuild the Linear Mind",
-			Published: "2023-11-25",
+			Published: "2023-11",
 			Pages:     125,
 			Genres:    []string{"Nonfiction", "Productivity", "Self Help"},
 			Rating:    4,
 			Version:   1,
 		}
 
-		err := app.writeJSON(w, http.StatusOK, envelope{"book": book}, nil)
-		if err != nil {
-			app.logger.Print(err)
-			http.Error(w, "The server encounterd a problem and could not process your request", http.StatusInternalServerError)
+		if err := app.writeJSON(w, http.StatusOK, envelope{"book": book}, nil); err != nil {
+			app.serverErrorResponse(w, r, err)
 		}
+		//err := app.writeJSON(w, http.StatusOK, envelope{"book": book}, nil)
+		//if err != nil {
+		//app.logger.Print(err)
+		//http.Error(w, "The server encounterd a problem and could not process your request", http.StatusInternalServerError)
+		//}
 	}
 
 	if r.Method == http.MethodPut {
