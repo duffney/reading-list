@@ -26,16 +26,23 @@ func (app *application) healthcheckHandler(w http.ResponseWriter, r *http.Reques
 	if err := app.writeJSON(w, http.StatusOK, data, nil); err != nil {
 		app.serverErrorResponse(w, r, err)
 	}
-	//err := app.writeJSON(w, http.StatusOK, data, nil)
-	//if err != nil {
-	//app.logger.Print(err)
-	//http.Error(w, "The server encounterd a problem and could not process your request", http.StatusInternalServerError)
-	//}
+}
+func (app *application) multiplexer(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case "GET":
+		app.getBookHandler(w, r)
+	case "PUT":
+		app.editBookHandler(w, r)
+	case "DELETE":
+		app.deleteBookHandler(w, r)
+	default:
+		app.methodNotAllowedResponse(w, r)
+	}
 }
 
-func (app *application) crBooksHandler(w http.ResponseWriter, r *http.Request) {
+func (app *application) bookHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet && r.Method != http.MethodPost {
-		http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
+		app.methodNotAllowedResponse(w, r)
 		return
 	}
 
@@ -46,51 +53,48 @@ func (app *application) crBooksHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
 		fmt.Fprintln(w, "return reading list books")
 	}
-
 }
 
-func (app *application) rudBooksHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet && r.Method != http.MethodPut && r.Method != http.MethodDelete {
-		http.Error(w, http.StatusText(405), http.StatusMethodNotAllowed)
-		return
-	}
-
+func (app *application) getBookHandler(w http.ResponseWriter, r *http.Request) {
 	id := r.URL.Path[len("v1/books//"):]
 	idInt, err := strconv.ParseInt(id, 10, 64)
 	if err != nil {
 		app.badRequestResponse(w, r, err)
-		// http.Error(w, http.StatusText(400), http.StatusBadRequest)
 		return
 	}
-
-	if r.Method == http.MethodGet {
-		book := data.Book{
-			ID:        idInt,
-			CreatedAt: time.Now(),
-			Title:     "Reclaim",
-			Subtitle:  "Win the War Against Distraction and Rebuild the Linear Mind",
-			Published: "2023-11",
-			Pages:     125,
-			Genres:    []string{"Nonfiction", "Productivity", "Self Help"},
-			Rating:    4,
-			Version:   1,
-		}
-
-		if err := app.writeJSON(w, http.StatusOK, envelope{"book": book}, nil); err != nil {
-			app.serverErrorResponse(w, r, err)
-		}
-		//err := app.writeJSON(w, http.StatusOK, envelope{"book": book}, nil)
-		//if err != nil {
-		//app.logger.Print(err)
-		//http.Error(w, "The server encounterd a problem and could not process your request", http.StatusInternalServerError)
-		//}
+	book := data.Book{
+		ID:        idInt,
+		CreatedAt: time.Now(),
+		Title:     "Reclaim",
+		Subtitle:  "Win the War Against Distraction and Rebuild the Linear Mind",
+		Published: "2023-11",
+		Pages:     125,
+		Genres:    []string{"Nonfiction", "Productivity", "Self Help"},
+		Rating:    4,
+		Version:   1,
 	}
 
-	if r.Method == http.MethodPut {
-		fmt.Fprintf(w, "Update record for bookID %d\n", idInt)
+	if err := app.writeJSON(w, http.StatusOK, envelope{"book": book}, nil); err != nil {
+		app.serverErrorResponse(w, r, err)
 	}
+}
 
-	if r.Method == http.MethodDelete {
-		fmt.Fprintf(w, "Delete record for bookID %d\n", idInt)
+func (app *application) editBookHandler(w http.ResponseWriter, r *http.Request) {
+	id := r.URL.Path[len("v1/books//"):]
+	idInt, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		app.badRequestResponse(w, r, err)
+		return
 	}
+	fmt.Fprintf(w, "Update record for bookID %d\n", idInt)
+}
+
+func (app *application) deleteBookHandler(w http.ResponseWriter, r *http.Request) {
+	id := r.URL.Path[len("v1/books//"):]
+	idInt, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		app.badRequestResponse(w, r, err)
+		return
+	}
+	fmt.Fprintf(w, "Delete record for bookID %d\n", idInt)
 }
