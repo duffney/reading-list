@@ -46,8 +46,26 @@ func (app *application) bookHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// createBook requests
 	if r.Method == http.MethodPost {
-		fmt.Fprintln(w, "Add a new book to the reading list")
+		var input struct {
+			Title     string   `json:"title"`
+			Published string   `json:"published"`
+			Pages     int      `json:"pages"`
+			Genres    []string `json:"genres"`
+		}
+
+		//err := json.NewDecoder(r.Body).Decode(&input)
+		//if err != nil {
+		//app.errorResponse(w, r, http.StatusBadRequest, err.Error())
+		//}
+		//fmt.Fprintf(w, "%+v\n", input)
+		err := app.readJSON(w, r, &input)
+		if err != nil {
+			app.badRequestResponse(w, r, err)
+			return
+		}
+		fmt.Fprintf(w, "%+v\n", input)
 	}
 
 	if r.Method == http.MethodGet {
@@ -66,12 +84,12 @@ func (app *application) getBookHandler(w http.ResponseWriter, r *http.Request) {
 		ID:        idInt,
 		CreatedAt: time.Now(),
 		Title:     "Reclaim",
-		Subtitle:  "Win the War Against Distraction and Rebuild the Linear Mind",
+		// Subtitle:  "Win the War Against Distraction and Rebuild the Linear Mind",
 		Published: "2023-11",
 		Pages:     125,
 		Genres:    []string{"Nonfiction", "Productivity", "Self Help"},
-		Rating:    4,
-		Version:   1,
+		// Rating:    4,
+		Version: 1,
 	}
 
 	if err := app.writeJSON(w, http.StatusOK, envelope{"book": book}, nil); err != nil {
