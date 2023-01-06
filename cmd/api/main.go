@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/Duffney/reading-list/internal/data"
 	_ "github.com/lib/pq"
 )
 
@@ -24,6 +25,7 @@ type config struct {
 type application struct {
 	config config //type embedding
 	logger *log.Logger
+	models data.Models
 }
 
 func main() {
@@ -53,6 +55,7 @@ func main() {
 	app := &application{
 		config: cfg,
 		logger: logger,
+		models: data.NewModels(db),
 	}
 	addr := fmt.Sprintf(":%d", cfg.port)
 
