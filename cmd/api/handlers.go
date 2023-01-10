@@ -31,8 +31,8 @@ func (app *application) multiplexer(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
 		app.getBookHandler(w, r)
-	case "PUT":
-		app.editBookHandler(w, r)
+	case "PATCH":
+		app.updateBookHandler(w, r)
 	case "DELETE":
 		app.deleteBookHandler(w, r)
 	default:
@@ -84,7 +84,16 @@ func (app *application) bookHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if r.Method == http.MethodGet {
-		fmt.Fprintln(w, "return reading list books")
+		books, err := app.models.Books.GetAll()
+		if err != nil {
+			app.serverErrorResponse(w, r, err)
+			return
+		}
+
+		err = app.writeJSON(w, http.StatusOK, envelope{"books": books}, nil)
+		if err != nil {
+			app.serverErrorResponse(w, r, err)
+		}
 	}
 }
 
@@ -112,7 +121,7 @@ func (app *application) getBookHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (app *application) editBookHandler(w http.ResponseWriter, r *http.Request) {
+func (app *application) updateBookHandler(w http.ResponseWriter, r *http.Request) {
 	id := r.URL.Path[len("v1/books//"):]
 	idInt, err := strconv.ParseInt(id, 10, 64)
 	if err != nil {
@@ -132,9 +141,9 @@ func (app *application) editBookHandler(w http.ResponseWriter, r *http.Request) 
 	}
 
 	var input struct {
-		Title     string   `json:"title"`
-		Published int      `json:"published"`
-		Pages     int      `json:"pages"`
+		Title     *string  `json:"title"`
+		Published *int     `json:"published"`
+		Pages     *int     `json:"pages"`
 		Genres    []string `json:"genres"`
 	}
 
@@ -144,10 +153,21 @@ func (app *application) editBookHandler(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	book.Title = input.Title
-	book.Published = input.Published
-	book.Pages = input.Pages
-	book.Genres = input.Genres
+	if input.Title != nil {
+		book.Title = *input.Title
+	}
+
+	if input.Published != nil {
+		book.Published = *input.Published
+	}
+
+	if input.Pages != nil {
+		book.Pages = *input.Pages
+	}
+
+	if input.Genres != nil {
+		book.Genres = input.Genres
+	}
 
 	err = app.models.Books.Update(book)
 	if err != nil {
