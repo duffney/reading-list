@@ -1,0 +1,18 @@
+{{define "title"}}Create a New Book Entry{{end}}
+
+{{define "main"}}
+<form action='/create' method='Post'>
+  <label>Title:</label>
+  <input type="text" name="title" value='{{.Form.Title}}'><br>
+  <label>Pages:</label>
+  <input type="number" name="pages" value='{{.Form.Pages}}'><br>
+  <label>Published:</label>
+  <input type="number" name="published" value='{{.Form.Published}}'><br>
+  <label>Genres:</label>
+  <input type="text" name="genres[]" multiple value='{{.Form.Genres}}'><br>
+  <div class="button-center">
+    <button type="submit">Submit</button>
+  </div>
+  
+</form>
+{{end}}

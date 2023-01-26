@@ -50,7 +50,7 @@ nav ul {
   flex-flow: row nowrap;
   justify-content: right;
   list-style: none;
-  background: #F7F9FA;
+  background: #ffffff;
 }
 
 nav a {
@@ -60,8 +60,6 @@ nav a {
   text-align: center;
   padding: 10px;
   padding-right: 25px;
-  /* border-top: 1px solid rgba(255,255,255,0.3); */
-  /* border-bottom: 1px solid rgba(0,0,0,0.1); */
 }
 
 nav a:hover {
@@ -74,6 +72,36 @@ main {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+table {
+  background: white;
+  border: 1px solid #E4E5E7;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+td, th {
+  text-align: left;
+  padding: 9px 18px;
+}
+
+th:last-child, td:last-child {
+  text-align: right;
+  color: #6A6C6F;
+}
+
+tr {
+  border-bottom: 1px solid #E4E5E7;
+}
+
+tr:nth-child(2n) {
+  background-color: #F7F9FA;
+}
+
+td a {
+  color: #1577da;
+  text-decoration: none;
 }
 
 /* class selector for book-details */
@@ -103,4 +131,15 @@ footer a:hover {
   text-decoration: none;
   font-weight: bolder;
   color: lightblue;
+}
+
+form button {
+  border: 1px solid black;
+  padding: 5px;
+  text-align: center;
+}
+
+.button-center {
+  display: flex;
+  justify-content: center;
 }

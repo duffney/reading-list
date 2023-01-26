@@ -2,19 +2,18 @@
 
 {{define "main"}}
   <article>
-    <h2>My favorite books</h2>
-    {{if .Snippets}}
+    {{if .Books}}
     <table>
         <tr>
             <th>Title</th>
-            <th>Created</th>
-            <th>ID</th>
+            <th>Pages</th>
+            <th>Published</th>
         </tr>
-        {{range .Snippets}}
+        {{range .Books}}
         <tr>
-            <td><a href='/snippet/view?id={{.ID}}'>{{.Title}}</a></td>
-            <td>{{.Created}}</td>
-            <td>#{{.ID}}</td>
+            <td><a href='/book/view?id={{.ID}}'>{{.Title}}</a></td>
+            <td>{{.Pages}}</td>
+            <td>{{.Published}}</td>
         </tr>
         {{end}}
     </table>

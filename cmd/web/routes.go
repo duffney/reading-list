@@ -10,6 +10,7 @@ func routes() *http.ServeMux {
 
 	mux.HandleFunc("/", home)
 	mux.HandleFunc("/book/", showBook)
+	mux.HandleFunc("/create", createBook)
 
 	return mux
 }
